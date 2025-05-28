@@ -65,10 +65,31 @@ class DiviGSAPModules {
         // Enqueue GSAP from CDN
         wp_enqueue_script('gsap', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js', array(), '3.12.2', true);
         
+        // Debug: Log that we're enqueueing GSAP
+        error_log('DIVI GSAP: Enqueuing GSAP from CDN');
+        
         // Enqueue our custom scripts
         $frontend_js = DIVI_GSAP_PLUGIN_URL . 'scripts/frontend.js';
         if (file_exists(DIVI_GSAP_PLUGIN_DIR . 'scripts/frontend.js')) {
             wp_enqueue_script('divi-gsap-frontend', $frontend_js, array('gsap'), '1.0.0', true);
+            error_log('DIVI GSAP: Enqueuing frontend.js');
+        }
+        
+        // Force cache busting for visual-builder.js
+        $visual_builder_js = DIVI_GSAP_PLUGIN_URL . 'scripts/visual-builder.js';
+        $cache_buster = '?v=' . time(); // Force cache busting
+        
+        if (file_exists(DIVI_GSAP_PLUGIN_DIR . 'scripts/visual-builder.js')) {
+            wp_enqueue_script(
+                'divi-gsap-visual-builder', 
+                $visual_builder_js . $cache_buster, 
+                array('jquery'), 
+                time(), // Use timestamp as version
+                true
+            );
+            error_log('DIVI GSAP: Enqueuing visual-builder.js with cache buster: ' . $visual_builder_js . $cache_buster);
+        } else {
+            error_log('DIVI GSAP: visual-builder.js file NOT found');
         }
     }
 }
